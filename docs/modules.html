@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Mobile Game Foundation의 Core, Firebase, Google Mobile Ads 모듈 카탈로그" />
+    <title>모듈 카탈로그 — Heosi Dev Archive</title>
+    <link rel="icon" href="../assets/brand-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="doc-body">
+    <a class="skip-link" href="#content">본문으로 건너뛰기</a>
+    <header class="topbar">
+      <a class="brand" href="../index.html"><img src="../assets/brand-mark.svg" width="28" height="28" alt="" /><span>Heosi Dev Archive</span></a>
+      <nav class="top-links" aria-label="문서 링크"><a href="../index.html#work">Work</a><a href="../index.html#library">Docs</a><a href="https://github.com/sohn93" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+    </header>
+    <main class="doc-shell" id="content">
+      <header class="doc-hero">
+        <div><p class="eyebrow">REFERENCE / MODULES</p><h1>세 패키지,<br />한 방향의 계약.</h1><p class="doc-lede">각 모듈이 무엇을 책임지고 무엇을 모르는지 빠르게 확인하는 카탈로그입니다.</p></div>
+        <dl class="doc-meta"><div><dt>Core</dt><dd>0.1.0</dd></div><div><dt>Firebase</dt><dd>0.1.0</dd></div><div><dt>Mobile Ads</dt><dd>0.1.0</dd></div><div><dt>Distribution</dt><dd>Embedded UPM</dd></div></dl>
+      </header>
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="목차"><p>ON THIS PAGE</p><a href="#core">Core</a><a href="#firebase">Firebase</a><a href="#ads">Ads</a><a href="#contracts">계약</a><a href="#project">프로젝트 소유</a></aside>
+        <article class="doc-content">
+          <section class="doc-section" id="core">
+            <span class="doc-kicker">01 · CORE</span><h2>com.heosigames.mobile-template.core</h2>
+            <p class="lead-copy">SDK 없이도 컴파일되는 앱 셸과 서비스 계약입니다.</p>
+            <div class="table-scroll"><table><thead><tr><th>영역</th><th>주요 책임</th></tr></thead><tbody>
+              <tr><td><strong>Bootstrap</strong></td><td>순차 서비스 초기화, timeout, 결과 기록, initial screen 진입</td></tr>
+              <tr><td><strong>Navigation</strong></td><td>screen history, popup LIFO, Android Back, safe area</td></tr>
+              <tr><td><strong>Lifecycle</strong></td><td>pause/resume 신호 전달</td></tr>
+              <tr><td><strong>Localization</strong></td><td>CSV lookup과 TMP text 연결</td></tr>
+              <tr><td><strong>Audio</strong></td><td>BGM/SFX preference와 caller-provided clip 재생</td></tr>
+              <tr><td><strong>Services</strong></td><td>analytics, crash, ads contract와 null 구현</td></tr>
+            </tbody></table></div>
+            <p>직접 의존성은 Unity UI, TextMesh Pro, Input System, built-in Audio module입니다.</p>
+          </section>
+          <section class="doc-section" id="firebase">
+            <span class="doc-kicker">02 · FIREBASE ADAPTER</span><h2>com.heosigames.mobile-template.firebase</h2>
+            <p>Core의 analytics와 crash-reporting 계약을 Firebase App, Analytics, Crashlytics에 연결합니다. Firebase Auth와 Google Sign-In은 포함하지 않습니다.</p>
+            <ul><li>Firebase dependency 확인과 복구 가능한 unavailable 상태</li><li>App, Analytics, Crashlytics 준비 상태 분리</li><li>분석 event와 parameter를 SDK-neutral 값에서 변환</li><li>non-fatal exception과 custom key 전달</li></ul>
+            <div class="callout is-warning"><strong>선행 조건</strong><p>소비 프로젝트에 Firebase Unity SDK App, Analytics, Crashlytics assembly가 설치되어야 adapter package가 컴파일됩니다. vendor SDK는 패키지에 재배포하지 않습니다.</p></div>
+          </section>
+          <section class="doc-section" id="ads">
+            <span class="doc-kicker">03 · GOOGLE MOBILE ADS ADAPTER</span><h2>com.heosigames.mobile-template.google-mobile-ads</h2>
+            <p>Core 광고 계약을 Google Mobile Ads와 UMP에 연결합니다. 동의 가능 상태가 광고 초기화와 요청의 gate가 됩니다.</p>
+            <div class="table-scroll"><table><thead><tr><th>지원 형식</th><th>계약 동작</th></tr></thead><tbody>
+              <tr><td><strong>Banner</strong></td><td>load, show, hide, destroy</td></tr>
+              <tr><td><strong>Interstitial</strong></td><td>load와 1회 completion 보장 show</td></tr>
+              <tr><td><strong>Rewarded</strong></td><td>광고 결과만 반환; 실제 게임 보상은 외부 정책</td></tr>
+              <tr><td><strong>Rewarded interstitial</strong></td><td>reward callback과 종료 결과 분리</td></tr>
+              <tr><td><strong>App open</strong></td><td>load와 foreground 정책에 사용할 show</td></tr>
+              <tr><td><strong>UMP</strong></td><td>consent refresh, form, privacy options</td></tr>
+            </tbody></table></div>
+          </section>
+          <section class="doc-section" id="contracts">
+            <span class="doc-kicker">04 · PUBLIC CONTRACTS</span><h2>게임 코드가 바라볼 인터페이스.</h2>
+            <ul><li><code>IAnalyticsService</code> — event와 parameter 기록</li><li><code>ICrashReportingService</code> — exception, log, custom key</li><li><code>IAdService</code> — 준비 상태, load/show, 광고 결과</li><li><code>IAppBootstrapService</code> — startup service 등록</li><li><code>ILocalizationService</code> — locale과 key lookup</li><li><code>IAudioService</code> — preference와 clip playback</li></ul>
+          </section>
+          <section class="doc-section" id="project">
+            <span class="doc-kicker">05 · PROJECT-OWNED</span><h2>패키지 바깥에 남겨둔 것.</h2>
+            <p>scene, prefab, localization CSV, AppRuntimeSettings, AdMobSettings, Firebase configuration, vendor SDK binaries, Android resolver output, Player Settings는 게임 프로젝트가 소유합니다. 이 경계 덕분에 패키지가 특정 application ID나 production credential을 품지 않습니다.</p>
+          </section>
+          <nav class="doc-next" aria-label="다음 문서"><a href="architecture.html">← 아키텍처</a><a href="android-setup.html">Android 설정 →</a></nav>
+        </article>
+      </div>
+    </main>
+    <script src="../app.js"></script>
+  </body>
+</html>
+

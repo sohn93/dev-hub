@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Unity 모바일 게임 공통 기반을 세 개의 UPM 패키지로 분리한 케이스 스터디" />
+    <title>Unity 모바일 게임 기반 만들기 — Heosi Dev Archive</title>
+    <link rel="icon" href="../assets/brand-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="doc-body">
+    <a class="skip-link" href="#content">본문으로 건너뛰기</a>
+    <header class="topbar">
+      <a class="brand" href="../index.html"><img src="../assets/brand-mark.svg" width="28" height="28" alt="" /><span>Heosi Dev Archive</span></a>
+      <nav class="top-links" aria-label="문서 링크"><a href="../index.html#work">Work</a><a href="../index.html#library">Docs</a><a href="https://github.com/sohn93" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+    </header>
+    <main class="doc-shell" id="content">
+      <header class="doc-hero">
+        <div>
+          <p class="eyebrow">CASE STUDY / MOBILE FOUNDATION</p>
+          <h1>복사하던 게임 프로젝트를,<br />설명 가능한 기반으로.</h1>
+          <p class="doc-lede">완성된 게임에서 장르 독립적인 기능만 걷어내고, SDK 경계와 검증 절차를 가진 Android 스타터 프로젝트로 다시 구성했습니다.</p>
+        </div>
+        <dl class="doc-meta">
+          <div><dt>Role</dt><dd>Architecture · Refactor · QA</dd></div>
+          <div><dt>Engine</dt><dd>Unity 6000.3.8f1</dd></div>
+          <div><dt>Platform</dt><dd>Android</dd></div>
+          <div><dt>Snapshot</dt><dd>2026-10-11</dd></div>
+          <div><dt>Status</dt><dd>Validated starter</dd></div>
+        </dl>
+      </header>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="목차">
+          <p>ON THIS PAGE</p>
+          <a href="#problem">문제</a>
+          <a href="#constraints">제약</a>
+          <a href="#decisions">설계 판단</a>
+          <a href="#boundary">구현 경계</a>
+          <a href="#evidence">검증</a>
+          <a href="#limits">남은 한계</a>
+        </aside>
+        <article class="doc-content">
+          <section class="doc-section" id="problem">
+            <span class="doc-kicker">01 · PROBLEM</span>
+            <h2>새 게임마다 전체 프로젝트를 복사하면,<br />공통 기반과 게임 규칙이 함께 따라왔습니다.</h2>
+            <p class="lead-copy">Kitty Guardians 프로젝트에는 재사용할 가치가 있는 모바일 공통 기능과, 특정 게임에서만 의미가 있는 콘텐츠·경제·보상 정책이 섞여 있었습니다.</p>
+            <p>그 상태에서 복사 후 삭제하는 방식은 빠르게 시작할 수 있지만, 무엇을 지워도 되는지 매번 다시 판단해야 합니다. Firebase Auth, Google Sign-In, PlayFab, IAP처럼 다음 프로젝트에 필요하지 않은 연동도 함께 따라오고, 게임 코드가 SDK 타입을 직접 알수록 분리는 더 어려워집니다.</p>
+            <div class="callout">
+              <strong>목표</strong>
+              <p>장르가 달라도 남는 Android 모바일 게임 기반만 보존하고, 새 게임의 정책과 콘텐츠가 들어갈 자리를 명확히 비워두는 것.</p>
+            </div>
+          </section>
+
+          <section class="doc-section" id="constraints">
+            <span class="doc-kicker">02 · CONSTRAINTS</span>
+            <h2>코드를 옮기는 것보다<br />경계를 증명하는 일이 중요했습니다.</h2>
+            <ul>
+              <li>UI는 UI Toolkit이 아니라 기존 제작 흐름과 맞는 uGUI와 TextMesh Pro를 사용합니다.</li>
+              <li>Firebase는 App, Analytics, Crashlytics만 남기고 Auth는 제외합니다.</li>
+              <li>광고는 Google Mobile Ads와 UMP 동의 흐름까지만 공통 기반으로 봅니다.</li>
+              <li>씬과 프리팹 연결은 런타임 탐색 없이 serialized reference로 명시합니다.</li>
+              <li>SDK 설정이 없더라도 샘플 앱의 기본 흐름은 시작할 수 있어야 합니다.</li>
+              <li>릴리스 구성 오류는 실행 중이 아니라 빌드 전에 차단해야 합니다.</li>
+            </ul>
+          </section>
+
+          <section class="doc-section" id="decisions">
+            <span class="doc-kicker">03 · DECISIONS</span>
+            <h2>공통 기능은 Core로,<br />외부 변화는 adapter로 밀어냈습니다.</h2>
+            <div class="fact-grid">
+              <div class="fact"><strong>Core</strong><span>uGUI · lifecycle · contracts</span></div>
+              <div class="fact"><strong>Firebase</strong><span>Analytics · Crashlytics adapter</span></div>
+              <div class="fact"><strong>Ads</strong><span>Google Mobile Ads · UMP adapter</span></div>
+            </div>
+            <h3>1. 게임 코드는 SDK 타입을 모릅니다</h3>
+            <p><code>IAnalyticsService</code>, <code>ICrashReportingService</code>, <code>IAdService</code>가 Core에 있고, 각 SDK 패키지가 계약을 구현합니다. Core 정적 검사에서 Firebase와 Google Mobile Ads 참조가 0건임을 확인했습니다.</p>
+            <h3>2. SDK 부재는 복구 가능한 상태입니다</h3>
+            <p>Null 구현과 서비스 초기화 결과를 통해 SDK 미설치·설정 누락·초기화 실패를 구분합니다. 선택적 서비스가 실패해도 초기 화면으로 이동하는 앱 흐름은 유지됩니다.</p>
+            <h3>3. 빌드 목적마다 검증 기준이 다릅니다</h3>
+            <p>깨끗한 템플릿, 개발 빌드, 릴리스 빌드가 요구하는 조건을 분리했습니다. 공식 샘플 광고 ID는 템플릿과 개발 단계에서는 허용하지만, 릴리스에서는 차단합니다.</p>
+          </section>
+
+          <section class="doc-section" id="boundary">
+            <span class="doc-kicker">04 · IMPLEMENTATION BOUNDARY</span>
+            <h2>패키지와 프로젝트가<br />소유할 것을 분명히 했습니다.</h2>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>영역</th><th>소유자</th><th>포함 내용</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Core package</strong></td><td>재사용 모듈</td><td>bootstrap, uGUI flow, lifecycle, localization, audio, service contracts</td></tr>
+                  <tr><td><strong>Firebase package</strong></td><td>재사용 adapter</td><td>App dependency 확인, Analytics, Crashlytics</td></tr>
+                  <tr><td><strong>Ads package</strong></td><td>재사용 adapter</td><td>UMP, banner, interstitial, rewarded, app-open</td></tr>
+                  <tr><td><strong>Starter project</strong></td><td>게임 시작점</td><td>scene, prefab, sample UI, settings, SDK binaries, Player Settings</td></tr>
+                  <tr><td><strong>Game code</strong></td><td>새 프로젝트</td><td>content, save, economy, rewards, backend policy</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section" id="evidence">
+            <span class="doc-kicker">05 · EVIDENCE</span>
+            <h2>완료의 기준을 파일 이동이 아니라<br />실제 빌드와 경계 검사로 잡았습니다.</h2>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>검증</th><th>결과</th><th>의미</th></tr></thead>
+                <tbody>
+                  <tr><td>Unity compile</td><td><span class="result-pass">PASS</span></td><td>Unity 6000.3.8f1 C# 오류 없음</td></tr>
+                  <tr><td>Core-only smoke</td><td><span class="result-pass">PASS</span></td><td>Firebase·Ads payload 없이 Core package compile</td></tr>
+                  <tr><td>Android IL2CPP build</td><td><span class="result-pass">PASS</span></td><td>개발 APK 생성, package/API identity 확인</td></tr>
+                  <tr><td>APK signing</td><td><span class="result-pass">PASS</span></td><td>Android debug certificate, Signature Scheme v2</td></tr>
+                  <tr><td>Final code review</td><td><span class="result-pass">PASS</span></td><td>미해결 Critical·Important·Minor 없음</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>전체 근거와 SHA-256은 <a class="text-link" href="verification.html">검증 원장 <span>→</span></a>에서 확인할 수 있습니다.</p>
+          </section>
+
+          <section class="doc-section" id="limits">
+            <span class="doc-kicker">06 · LIMITS</span>
+            <h2>확인하지 못한 것은<br />성공으로 적지 않았습니다.</h2>
+            <div class="callout is-warning">
+              <strong>남은 검증</strong>
+              <p>연결된 Android 기기가 없어 설치·실행 smoke test는 수행하지 못했습니다. 새 게임의 <code>google-services.json</code>도 의도적으로 없으므로 Analytics·Crashlytics live delivery는 확인 대상에서 제외했습니다.</p>
+            </div>
+            <p>또한 embedded package를 복사형 스타터로 사용하는 단계까지가 현재 범위입니다. 여러 게임에 중앙 배포하려면 이후 Git UPM 또는 private registry 운영 모델이 별도로 필요합니다.</p>
+          </section>
+
+          <nav class="doc-next" aria-label="다음 문서">
+            <a href="../index.html#library">← 문서 허브</a>
+            <a href="architecture.html">아키텍처 자세히 보기 →</a>
+          </nav>
+        </article>
+      </div>
+    </main>
+    <script src="../app.js"></script>
+  </body>
+</html>
+

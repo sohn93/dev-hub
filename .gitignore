@@ -1,0 +1,16 @@
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.superpowers/
+_preview/
+*.log
+*.apk
+*.aab
+*.keystore
+*.jks
+google-services.json
+GoogleService-Info.plist
+keystore.properties
+signing.properties
+

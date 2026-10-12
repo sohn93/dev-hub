@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 520" role="img" aria-labelledby="title desc">
+  <title id="title">Mobile Game Foundation package architecture</title>
+  <desc id="desc">Game code depends on the SDK-neutral Core package. Firebase and Google Mobile Ads adapters also depend on Core. Project wiring owns scenes, prefabs, settings and vendor SDKs.</desc>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1d202b"/>
+      <stop offset="1" stop-color="#151720"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7cff"/>
+      <stop offset="1" stop-color="#5d4be7"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000" flood-opacity=".28"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0 10 5 0 10Z" fill="#8b7cff"/>
+    </marker>
+  </defs>
+  <rect width="880" height="520" rx="28" fill="#11131a"/>
+  <g opacity=".14" stroke="#aaa4d8">
+    <path d="M0 80h880M0 160h880M0 240h880M0 320h880M0 400h880M80 0v520M160 0v520M240 0v520M320 0v520M400 0v520M480 0v520M560 0v520M640 0v520M720 0v520M800 0v520"/>
+  </g>
+  <text x="54" y="58" fill="#a9adbb" font-family="Arial, sans-serif" font-size="14" letter-spacing="3">DEPENDENCY MAP</text>
+
+  <g filter="url(#shadow)">
+    <rect x="300" y="84" width="280" height="76" rx="16" fill="url(#panel)" stroke="#454a5b"/>
+    <circle cx="337" cy="122" r="12" fill="#f4b860"/>
+    <text x="365" y="117" fill="#f6f3ea" font-family="Arial, sans-serif" font-size="19" font-weight="700">GAME CODE</text>
+    <text x="365" y="139" fill="#8f95a5" font-family="Arial, sans-serif" font-size="12">content · economy · reward policy</text>
+  </g>
+
+  <path d="M440 160v58" fill="none" stroke="#8b7cff" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="242" y="232" width="396" height="104" rx="20" fill="url(#core)"/>
+    <text x="280" y="273" fill="#fff" font-family="Arial, sans-serif" font-size="13" letter-spacing="2">SDK-NEUTRAL</text>
+    <text x="280" y="306" fill="#fff" font-family="Arial, sans-serif" font-size="26" font-weight="800">CORE</text>
+    <text x="374" y="304" fill="#dedaff" font-family="Arial, sans-serif" font-size="13">uGUI · bootstrap · lifecycle · contracts</text>
+  </g>
+
+  <path d="M350 336v49H206v35" fill="none" stroke="#8b7cff" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M530 336v49h144v35" fill="none" stroke="#8b7cff" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="86" y="420" width="240" height="64" rx="15" fill="url(#panel)" stroke="#454a5b"/>
+    <circle cx="119" cy="452" r="9" fill="#ffca55"/>
+    <text x="142" y="447" fill="#f6f3ea" font-family="Arial, sans-serif" font-size="16" font-weight="700">FIREBASE</text>
+    <text x="142" y="466" fill="#8f95a5" font-family="Arial, sans-serif" font-size="11">Analytics · Crashlytics</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="554" y="420" width="240" height="64" rx="15" fill="url(#panel)" stroke="#454a5b"/>
+    <circle cx="587" cy="452" r="9" fill="#62d0a8"/>
+    <text x="610" y="447" fill="#f6f3ea" font-family="Arial, sans-serif" font-size="16" font-weight="700">MOBILE ADS</text>
+    <text x="610" y="466" fill="#8f95a5" font-family="Arial, sans-serif" font-size="11">Ad formats · UMP consent</text>
+  </g>
+</svg>
+

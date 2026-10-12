@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Mobile Game Foundation의 Unity, Android 빌드와 모듈 경계 검증 원장" />
+    <title>검증 원장 — Heosi Dev Archive</title>
+    <link rel="icon" href="../assets/brand-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="doc-body">
+    <a class="skip-link" href="#content">본문으로 건너뛰기</a>
+    <header class="topbar">
+      <a class="brand" href="../index.html"><img src="../assets/brand-mark.svg" width="28" height="28" alt="" /><span>Heosi Dev Archive</span></a>
+      <nav class="top-links" aria-label="문서 링크"><a href="../index.html#work">Work</a><a href="../index.html#library">Docs</a><a href="https://github.com/sohn93" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+    </header>
+    <main class="doc-shell" id="content">
+      <header class="doc-hero">
+        <div><p class="eyebrow">EVIDENCE / VERIFICATION</p><h1>통과와 미확인을<br />같은 원장에.</h1><p class="doc-lede">실제로 수행한 검증만 Pass로 기록하고, 기기와 live configuration이 없어 확인하지 못한 항목은 분리합니다.</p></div>
+        <dl class="doc-meta"><div><dt>Verified</dt><dd>2026-10-11</dd></div><div><dt>Unity</dt><dd>6000.3.8f1</dd></div><div><dt>Package</dt><dd>com.heosigames.mobilegametemplate</dd></div><div><dt>Build</dt><dd>Android IL2CPP</dd></div></dl>
+      </header>
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="목차"><p>ON THIS PAGE</p><a href="#ledger">원장</a><a href="#apk">APK</a><a href="#findings">발견과 수정</a><a href="#remaining">남은 검증</a></aside>
+        <article class="doc-content">
+          <section class="doc-section" id="ledger">
+            <span class="doc-kicker">01 · EVIDENCE LEDGER</span><h2>확인된 사실.</h2>
+            <div class="table-scroll"><table><thead><tr><th>검증</th><th>결과</th><th>근거</th></tr></thead><tbody>
+              <tr><td>Selective baseline copy</td><td><span class="result-pass">PASS</span></td><td>Assets, Packages, ProjectSettings 복사; nested Git 없음</td></tr>
+              <tr><td>Unity baseline import</td><td><span class="result-pass">PASS</span></td><td>Unity Personal entitlement 해결, exit code 0</td></tr>
+              <tr><td>C# static compile</td><td><span class="result-pass">PASS</span></td><td>Unity/Firebase/Ads assembly 기준 오류 0</td></tr>
+              <tr><td>Generated wiring</td><td><span class="result-pass">PASS</span></td><td>scene 2, prefab 6, settings asset 3과 build scene list</td></tr>
+              <tr><td>Embedded package split</td><td><span class="result-pass">PASS</span></td><td>Core, Firebase, Ads 0.1.0 manifest와 assembly import</td></tr>
+              <tr><td>SDK-neutral Core</td><td><span class="result-pass">PASS</span></td><td>Core C#·asmdef에서 vendor SDK reference 0</td></tr>
+              <tr><td>Validation profiles</td><td><span class="result-pass">PASS</span></td><td>Template/Development 통과; Release는 의도된 blocker만 보고</td></tr>
+              <tr><td>Core-only smoke</td><td><span class="result-pass">PASS</span></td><td>uGUI, Input System, Audio만으로 package compile</td></tr>
+              <tr><td>Final code review</td><td><span class="result-pass">PASS</span></td><td>미해결 Critical, Important, Minor 없음</td></tr>
+              <tr><td>Android APK build</td><td><span class="result-pass">PASS</span></td><td>Development IL2CPP build 성공</td></tr>
+              <tr><td>Device install and launch</td><td><span class="result-open">UNAVAILABLE</span></td><td>연결된 기기와 emulator 없음</td></tr>
+              <tr><td>Firebase live delivery</td><td><span class="result-na">NOT CONFIGURED</span></td><td>게임별 google-services.json 의도적 부재</td></tr>
+              <tr><td>AdMob live delivery</td><td><span class="result-na">NOT APPLICABLE</span></td><td>공식 sample ID와 test mode 사용</td></tr>
+            </tbody></table></div>
+          </section>
+          <section class="doc-section" id="apk">
+            <span class="doc-kicker">02 · APK IDENTITY</span><h2>빌드 산출물.</h2>
+            <div class="fact-grid"><div class="fact"><strong>71.5 MB</strong><span>development APK</span></div><div class="fact"><strong>25 / 35</strong><span>minimum / target API</span></div><div class="fact"><strong>v2</strong><span>signature scheme verified</span></div></div>
+            <div class="table-scroll"><table><thead><tr><th>항목</th><th>값</th></tr></thead><tbody>
+              <tr><td><strong>Application ID</strong></td><td><code>com.heosigames.mobilegametemplate</code></td></tr>
+              <tr><td><strong>Version</strong></td><td>0.1.0 (versionCode 1)</td></tr>
+              <tr><td><strong>Signing</strong></td><td>Android debug certificate</td></tr>
+              <tr><td><strong>SHA-256</strong></td><td><code>56C3B0307BFD3D6FE44AE76D9832F3D30280A9AE170E6F1DA692FB9413537BB1</code></td></tr>
+            </tbody></table></div>
+          </section>
+          <section class="doc-section" id="findings">
+            <span class="doc-kicker">03 · FINDINGS</span><h2>검증이 실제로 찾아낸 것.</h2>
+            <h3>Google Mobile Ads Android payload</h3><p>첫 Android build에서 pruning 과정 중 누락된 vendor manifest 경로 4개를 확인했습니다. 필요한 파일을 복구하고 embedded manifest를 Google sample app ID로 정규화한 뒤 반복 build가 통과했습니다.</p>
+            <h3>Core Audio dependency</h3><p>Core-only smoke project가 Unity built-in Audio module의 미선언 의존성을 드러냈습니다. Core package manifest에 <code>com.unity.modules.audio</code> 1.0.0을 추가한 뒤 SDK 없는 smoke compile이 통과했습니다.</p>
+            <h3>SDK version label</h3><p>복사된 Firebase payload에는 13.7.0과 13.8.0 label이 섞여 있습니다. 선택된 App/Analytics/Crashlytics assembly는 Unity compile과 APK packaging을 통과했지만, 기기 runtime delivery는 확인하지 않았습니다.</p>
+          </section>
+          <section class="doc-section" id="remaining">
+            <span class="doc-kicker">04 · REMAINING</span><h2>기기가 생기면 이어서 확인할 것.</h2>
+            <ol class="flow-list"><li>USB debugging 기기 또는 emulator를 연결합니다.</li><li>개발 APK를 설치하고 startup, navigation, popup, Back, safe-area, preference 흐름을 확인합니다.</li><li>게임별 Firebase 설정을 추가한 뒤 Analytics DebugView와 Crashlytics 전달을 확인합니다.</li><li>UMP와 모든 광고 형식을 test device에서 확인하고 근거를 이 원장에 추가합니다.</li></ol>
+          </section>
+          <nav class="doc-next" aria-label="다음 문서"><a href="android-setup.html">← Android 설정</a><a href="contributing.html">문서 운영 가이드 →</a></nav>
+        </article>
+      </div>
+    </main>
+    <script src="../app.js"></script>
+  </body>
+</html>

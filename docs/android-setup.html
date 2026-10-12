@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Mobile Game Foundation의 Android, Firebase, Google Mobile Ads 설정 체크리스트" />
+    <title>Android · Firebase · Ads 설정 — Heosi Dev Archive</title>
+    <link rel="icon" href="../assets/brand-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="doc-body">
+    <a class="skip-link" href="#content">본문으로 건너뛰기</a>
+    <header class="topbar">
+      <a class="brand" href="../index.html"><img src="../assets/brand-mark.svg" width="28" height="28" alt="" /><span>Heosi Dev Archive</span></a>
+      <nav class="top-links" aria-label="문서 링크"><a href="../index.html#work">Work</a><a href="../index.html#library">Docs</a><a href="https://github.com/sohn93" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+    </header>
+    <main class="doc-shell" id="content">
+      <header class="doc-hero">
+        <div><p class="eyebrow">DELIVERY / ANDROID SETUP</p><h1>복사한 직후 바꿔야 할<br />서비스 경계.</h1><p class="doc-lede">package identity부터 Firebase, 광고와 서명까지 새 게임이 반드시 독립적으로 소유해야 할 설정입니다.</p></div>
+        <dl class="doc-meta"><div><dt>Default package</dt><dd>com.heosigames.mobilegametemplate</dd></div><div><dt>Min / Target</dt><dd>API 25 / 35</dd></div><div><dt>Ads mode</dt><dd>Test</dd></div><div><dt>Release gate</dt><dd>Enabled</dd></div></dl>
+      </header>
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="목차"><p>ON THIS PAGE</p><a href="#identity">Identity</a><a href="#firebase">Firebase</a><a href="#ads">Ads</a><a href="#signing">Signing</a><a href="#validation">Validation</a><a href="#build">Build</a></aside>
+        <article class="doc-content">
+          <section class="doc-section" id="identity">
+            <span class="doc-kicker">01 · PROJECT IDENTITY</span><h2>외부 서비스를 만들기 전에<br />package ID부터 확정합니다.</h2>
+            <ol class="flow-list"><li>product name을 새 게임 이름으로 변경합니다.</li><li>Android application ID를 고유한 값으로 변경합니다.</li><li>company와 version/versionCode를 확인합니다.</li><li>portrait, minimum API 25, target API 35가 게임 요구와 맞는지 확인합니다.</li></ol>
+            <div class="callout is-warning"><strong>복사 금지</strong><p>다른 게임의 Firebase 설정이나 production ad ID를 재사용하지 않습니다. 서비스의 Android 앱 등록은 package ID와 한 쌍입니다.</p></div>
+          </section>
+          <section class="doc-section" id="firebase">
+            <span class="doc-kicker">02 · FIREBASE</span><h2>App · Analytics · Crashlytics.</h2>
+            <ol class="flow-list"><li>새 게임 소유의 Firebase project를 생성하거나 선택합니다.</li><li>새 application ID로 Android 앱을 등록합니다.</li><li><code>google-services.json</code>을 내려받아 <code>Assets/</code>에 둡니다.</li><li>Google Analytics와 Crashlytics를 활성화합니다.</li><li>External Dependency Manager Android resolver를 실행합니다.</li><li>개발 빌드에서 readiness event와 deliberate non-fatal exception을 확인합니다.</li></ol>
+            <p>설정 파일은 Git에서 제외됩니다. 파일이 없어도 base template은 unavailable 상태로 계속 동작합니다.</p>
+          </section>
+          <section class="doc-section" id="ads">
+            <span class="doc-kicker">03 · GOOGLE MOBILE ADS & UMP</span><h2>샘플 ID로 시작하고,<br />릴리스 전에 모두 교체합니다.</h2>
+            <ol class="flow-list"><li>새 package ID로 AdMob Android 앱을 만듭니다.</li><li>banner, interstitial, rewarded, rewarded-interstitial, app-open unit을 만듭니다.</li><li>GoogleMobileAdsSettings의 sample app ID를 교체합니다.</li><li>AdMobSettings의 다섯 sample ad-unit ID를 교체합니다.</li><li>AdMob Privacy & messaging에서 지역별 메시지를 구성합니다.</li><li>test device에서 consent, privacy options와 모든 광고 형식을 검증합니다.</li><li>signed release 직전에만 template test mode를 끕니다.</li></ol>
+          </section>
+          <section class="doc-section" id="signing">
+            <span class="doc-kicker">04 · SIGNING</span><h2>키는 프로젝트가 아니라<br />소유자가 보관합니다.</h2>
+            <p>템플릿에는 keystore와 암호가 없습니다. 게임별 upload keystore를 저장소 밖에 만들고 Player Settings에서 로컬 경로를 연결합니다. alias password, <code>keystore.properties</code>, <code>signing.properties</code>는 커밋하지 않습니다.</p>
+          </section>
+          <section class="doc-section" id="validation">
+            <span class="doc-kicker">05 · VALIDATION PROFILES</span><h2>목적에 맞는 실패 기준.</h2>
+            <div class="table-scroll"><table><thead><tr><th>프로필</th><th>허용</th><th>차단</th></tr></thead><tbody>
+              <tr><td><strong>Template</strong></td><td>template package ID, sample ad ID, Firebase 설정 없음</td><td>재사용 기반 자체의 구조 오류</td></tr>
+              <tr><td><strong>Development</strong></td><td>game package ID, sample ads, test mode</td><td>개발 단계 구성 불일치</td></tr>
+              <tr><td><strong>Release</strong></td><td>production identity와 IDs</td><td>template ID, sample ads, test mode, Firebase 설정 누락</td></tr>
+            </tbody></table></div>
+            <p>Unity에서 시작한 모든 Android build도 Development 여부에 따라 알맞은 preprocessor validation을 실행합니다.</p>
+          </section>
+          <section class="doc-section" id="build">
+            <span class="doc-kicker">06 · BUILD</span><h2>샘플 기반의 실행 항목.</h2>
+            <ul><li><strong>Validate Template Project</strong> — 깨끗한 스타터 확인</li><li><strong>Validate Development Configuration</strong> — 게임별 ID와 test ads 확인</li><li><strong>Validate Release Configuration</strong> — production 조건 확인</li><li><strong>Build Sample Scenes</strong> — 명시적으로 연결된 sample asset 재생성</li><li><strong>Build Development Android APK</strong> — 개발 IL2CPP APK 생성</li></ul>
+            <div class="callout"><strong>폰트 주의</strong><p>포함된 LiberationSans TMP font는 한국어 glyph를 포함하지 않습니다. 한국어 locale을 사용하면 해당 glyph를 가진 TMP font 또는 fallback을 지정해야 합니다.</p></div>
+          </section>
+          <nav class="doc-next" aria-label="다음 문서"><a href="modules.html">← 모듈 카탈로그</a><a href="verification.html">검증 원장 →</a></nav>
+        </article>
+      </div>
+    </main>
+    <script src="../app.js"></script>
+  </body>
+</html>
+

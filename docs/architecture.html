@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Mobile Game Foundation의 패키지 경계와 런타임 흐름" />
+    <title>아키텍처와 런타임 흐름 — Heosi Dev Archive</title>
+    <link rel="icon" href="../assets/brand-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="doc-body">
+    <a class="skip-link" href="#content">본문으로 건너뛰기</a>
+    <header class="topbar">
+      <a class="brand" href="../index.html"><img src="../assets/brand-mark.svg" width="28" height="28" alt="" /><span>Heosi Dev Archive</span></a>
+      <nav class="top-links" aria-label="문서 링크"><a href="../index.html#work">Work</a><a href="../index.html#library">Docs</a><a href="https://github.com/sohn93" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+    </header>
+    <main class="doc-shell" id="content">
+      <header class="doc-hero">
+        <div><p class="eyebrow">SYSTEM DESIGN / ARCHITECTURE</p><h1>Core는 계약을 알고,<br />게임은 SDK를 모릅니다.</h1><p class="doc-lede">의존성 방향과 명시적 연결을 통해 외부 SDK 변화가 앱의 중심 흐름으로 새지 않게 합니다.</p></div>
+        <dl class="doc-meta"><div><dt>Packages</dt><dd>3 embedded UPM</dd></div><div><dt>Namespace</dt><dd>Heosi.MobileTemplate</dd></div><div><dt>Core SDK refs</dt><dd>0 verified</dd></div><div><dt>Wiring</dt><dd>Serialized</dd></div></dl>
+      </header>
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="목차"><p>ON THIS PAGE</p><a href="#boundary">경계</a><a href="#startup">시작</a><a href="#ui">UI 흐름</a><a href="#preferences">상태</a><a href="#sdk">SDK</a><a href="#extension">확장</a></aside>
+        <article class="doc-content">
+          <section class="doc-section" id="boundary">
+            <span class="doc-kicker">01 · PACKAGE BOUNDARY</span><h2>한 방향 의존성.</h2>
+            <img src="../assets/package-architecture.svg" alt="Game code와 두 SDK adapter가 SDK-neutral Core를 향해 의존하는 구조" />
+            <p><code>com.heosigames.mobile-template.core</code>는 분석, crash reporting, 광고 계약에 vendor SDK 타입을 포함하지 않습니다. Firebase와 Ads 패키지는 각각 Core에만 의존하며 서로를 참조하지 않습니다.</p>
+            <div class="callout"><strong>프로젝트가 연결을 소유합니다</strong><p>Editor builder가 AppRoot, scene, prefab의 참조를 생성 시점에 배선합니다. 런타임 hierarchy search나 Resources fallback은 사용하지 않습니다.</p></div>
+          </section>
+          <section class="doc-section" id="startup">
+            <span class="doc-kicker">02 · STARTUP</span><h2>초기화는 순서가 보이는 목록입니다.</h2>
+            <ol class="flow-list"><li><code>AppBootstrap</code>이 serialized service 목록을 앞에서부터 실행합니다.</li><li>각 결과를 <code>ServiceInitializationResult</code>로 기록합니다.</li><li>선택적 서비스 실패는 진단에 남기고 다음 초기화를 계속합니다.</li><li>완료 후 initial screen으로 이동합니다.</li></ol>
+            <p>장기 생존 객체인 AppRoot에는 bootstrap, lifecycle relay, navigation, localization, audio, Firebase, consent, ads component가 명시적으로 연결됩니다.</p>
+          </section>
+          <section class="doc-section" id="ui">
+            <span class="doc-kicker">03 · UGUI FLOW</span><h2>화면 전환과 Back 동작을<br />하나의 규칙으로.</h2>
+            <ul>
+              <li><code>UIViewRegistry</code>가 고유한 <code>UIViewId</code>와 screen/popup 인스턴스를 연결합니다.</li>
+              <li><code>ScreenNavigator</code>는 한 화면만 활성화하고 history를 기록합니다.</li>
+              <li><code>PopupStack</code>은 LIFO 순서로 popup을 엽니다.</li>
+              <li>Android Back은 최상위 popup → 화면 history → root exit confirm 순서로 처리됩니다.</li>
+              <li><code>SafeAreaFitter</code>는 지정된 RectTransform만 갱신합니다.</li>
+            </ul>
+          </section>
+          <section class="doc-section" id="preferences">
+            <span class="doc-kicker">04 · LOCAL STATE</span><h2>작고 명확한 기기 설정.</h2>
+            <p><code>CsvLocalizationService</code>는 inspector에 연결한 CSV TextAsset을 읽습니다. <code>LocalizedText</code>도 localization service와 TMP target을 직접 참조합니다.</p>
+            <p>언어와 BGM/SFX 설정은 <code>Heosi.MobileTemplate.*</code> PlayerPrefs key를 사용합니다. <code>AudioService</code>는 clip을 호출자로부터 받고 게임별 sound enum이나 asset loading 정책을 가지지 않습니다.</p>
+          </section>
+          <section class="doc-section" id="sdk">
+            <span class="doc-kicker">05 · SDK FLOW</span><h2>동의와 준비 상태가<br />광고 요청보다 먼저 옵니다.</h2>
+            <ol class="flow-list"><li>Firebase dependency를 한 번 확인하고 App, Analytics, Crashlytics 준비 상태를 분리합니다.</li><li>UMP consent 정보를 매 실행마다 갱신합니다.</li><li>동의 결과가 광고 요청을 허용할 때만 Mobile Ads를 초기화합니다.</li><li>fullscreen과 privacy callback은 public request마다 최대 한 번만 완료됩니다.</li></ol>
+            <p>Bootstrap timeout은 대기하는 호출자만 끝냅니다. UMP 처리는 계속되고, 늦게 성공하면 <code>ConsentChanged</code>를 통해 광고 초기화가 회복될 수 있습니다.</p>
+          </section>
+          <section class="doc-section" id="extension">
+            <span class="doc-kicker">06 · EXTENSION</span><h2>새 기능이 들어갈 자리.</h2>
+            <p>새 startup integration은 <code>IAppBootstrapService</code>로 구현하고 목록에 명시적으로 등록합니다. 게임별 scene, content, reward, economy, save, backend policy는 패키지 밖에 둡니다.</p>
+          </section>
+          <nav class="doc-next" aria-label="다음 문서"><a href="overview.html">← 한눈에 보기</a><a href="modules.html">모듈 카탈로그 →</a></nav>
+        </article>
+      </div>
+    </main>
+    <script src="../app.js"></script>
+  </body>
+</html>

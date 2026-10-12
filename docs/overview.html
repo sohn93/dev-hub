@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Unity Android 모바일 게임 템플릿의 포함 범위와 시작 방법" />
+    <title>템플릿 한눈에 보기 — Heosi Dev Archive</title>
+    <link rel="icon" href="../assets/brand-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="doc-body">
+    <a class="skip-link" href="#content">본문으로 건너뛰기</a>
+    <header class="topbar">
+      <a class="brand" href="../index.html"><img src="../assets/brand-mark.svg" width="28" height="28" alt="" /><span>Heosi Dev Archive</span></a>
+      <nav class="top-links" aria-label="문서 링크"><a href="../index.html#work">Work</a><a href="../index.html#library">Docs</a><a href="https://github.com/sohn93" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+    </header>
+    <main class="doc-shell" id="content">
+      <header class="doc-hero">
+        <div><p class="eyebrow">START HERE / OVERVIEW</p><h1>모바일 게임 기반,<br />어디까지 들어 있나.</h1><p class="doc-lede">장르와 콘텐츠가 바뀌어도 반복되는 Android 앱 셸과 서비스 연동만 남긴 개인용 Unity 스타터입니다.</p></div>
+        <dl class="doc-meta">
+          <div><dt>Version</dt><dd>0.1.0</dd></div>
+          <div><dt>Unity</dt><dd>6000.3.8f1</dd></div>
+          <div><dt>Min API</dt><dd>25</dd></div>
+          <div><dt>Target API</dt><dd>35</dd></div>
+          <div><dt>Orientation</dt><dd>Portrait</dd></div>
+        </dl>
+      </header>
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="목차"><p>ON THIS PAGE</p><a href="#included">포함</a><a href="#excluded">제외</a><a href="#start">시작</a><a href="#defaults">기본값</a><a href="#ownership">소유 경계</a></aside>
+        <article class="doc-content">
+          <section class="doc-section" id="included">
+            <span class="doc-kicker">01 · INCLUDED</span><h2>앱이 켜지고, 화면이 흐르고,<br />공통 서비스가 준비되는 데 필요한 것.</h2>
+            <ul>
+              <li>uGUI와 TextMesh Pro 기반 sample flow</li>
+              <li>serialized screen registry, 화면 history, popup stack</li>
+              <li>Android Back 우선순위와 safe-area 적용</li>
+              <li>CSV localization과 BGM/SFX 선호 설정</li>
+              <li>Firebase App, Analytics, Crashlytics adapter</li>
+              <li>Google Mobile Ads 전 광고 형식과 UMP 동의 adapter</li>
+              <li>Android 구성 validator, sample scene builder, development APK entry point</li>
+            </ul>
+          </section>
+          <section class="doc-section" id="excluded">
+            <span class="doc-kicker">02 · EXCLUDED</span><h2>게임마다 다시 결정해야 하는 것은<br />의도적으로 비웠습니다.</h2>
+            <div class="table-scroll"><table><thead><tr><th>제외 영역</th><th>이유</th></tr></thead><tbody>
+              <tr><td><strong>게임플레이와 콘텐츠</strong></td><td>장르와 프로젝트마다 달라지는 핵심 규칙</td></tr>
+              <tr><td><strong>Save · economy · reward policy</strong></td><td>서버와 밸런스 정책에 종속</td></tr>
+              <tr><td><strong>PlayFab · Firebase Auth · Google Sign-In</strong></td><td>모든 게임이 계정 시스템을 필요로 하지 않음</td></tr>
+              <tr><td><strong>IAP · OneStore · Facebook SDK</strong></td><td>스토어와 사업 요구가 확정된 뒤 선택</td></tr>
+              <tr><td><strong>DOTween</strong></td><td>공통 기반의 필수 의존성이 아님</td></tr>
+            </tbody></table></div>
+          </section>
+          <section class="doc-section" id="start">
+            <span class="doc-kicker">03 · START A GAME</span><h2>새 게임을 시작하는 순서.</h2>
+            <ol class="flow-list">
+              <li>스타터 저장소를 새 private 프로젝트로 복사합니다.</li>
+              <li>product name과 Android application ID를 고유하게 바꿉니다.</li>
+              <li>새 package ID로 Firebase와 AdMob 앱을 등록합니다.</li>
+              <li>Unity 6000.3.8f1에서 열고 Development validation을 실행합니다.</li>
+              <li>필요하면 sample scene builder로 committed sample assets를 재생성합니다.</li>
+              <li>게임 전용 코드는 패키지와 <code>Assets/_Template</code> 밖에 둡니다.</li>
+            </ol>
+          </section>
+          <section class="doc-section" id="defaults">
+            <span class="doc-kicker">04 · DEFAULTS</span><h2>복사 직후의 안전한 기본값.</h2>
+            <div class="fact-grid"><div class="fact"><strong>Test</strong><span>Google sample ad IDs</span></div><div class="fact"><strong>None</strong><span>production credentials</span></div><div class="fact"><strong>Debug</strong><span>Android signing</span></div></div>
+            <p>저장소에는 <code>google-services.json</code>, keystore, production ad-unit ID가 없습니다. 광고 설정은 Google sample ID와 test mode를 사용합니다.</p>
+          </section>
+          <section class="doc-section" id="ownership">
+            <span class="doc-kicker">05 · OWNERSHIP</span><h2>패키지가 아닌 프로젝트가 소유하는 것.</h2>
+            <p>씬, 프리팹, sample UI, localization data, 앱별 설정, 외부 SDK binary, Android resolver output, Player Settings는 스타터 프로젝트가 소유합니다. embedded package를 복사하면 새 게임마다 독립적인 사본이 생깁니다.</p>
+            <div class="callout"><strong>확장 원칙</strong><p>게임 코드는 SDK 구현이 아니라 Core runtime 계약에 의존합니다. rewarded ad 결과를 실제 보상으로 바꾸는 정책도 게임 코드에 둡니다.</p></div>
+          </section>
+          <nav class="doc-next" aria-label="다음 문서"><a href="../index.html#library">← 문서 허브</a><a href="modules.html">모듈 카탈로그 →</a></nav>
+        </article>
+      </div>
+    </main>
+    <script src="../app.js"></script>
+  </body>
+</html>
+
