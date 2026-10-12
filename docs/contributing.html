@@ -20,8 +20,13 @@
         <dl class="doc-meta"><div><dt>Build step</dt><dd>None</dd></div><div><dt>Content index</dt><dd>data.js</dd></div><div><dt>Deploy</dt><dd>GitHub Pages</dd></div><div><dt>Validation</dt><dd>PowerShell</dd></div></dl>
       </header>
       <div class="doc-layout">
-        <aside class="doc-toc" aria-label="목차"><p>ON THIS PAGE</p><a href="#preview">미리 보기</a><a href="#new-doc">문서 생성</a><a href="#register">카드 등록</a><a href="#project">프로젝트 추가</a><a href="#evidence">근거 관리</a><a href="#deploy">배포</a></aside>
+        <aside class="doc-toc" aria-label="목차"><p>ON THIS PAGE</p><a href="#identity">기본 정보</a><a href="#preview">미리 보기</a><a href="#new-doc">문서 생성</a><a href="#register">카드 등록</a><a href="#project">프로젝트 추가</a><a href="#evidence">근거 관리</a><a href="#deploy">배포</a></aside>
         <article class="doc-content">
+          <section class="doc-section" id="identity">
+            <span class="doc-kicker">00 · CUSTOMIZE IDENTITY</span><h2>복사한 뒤 이름과 링크부터<br />내 것으로 바꿉니다.</h2>
+            <p><code>data.js</code>의 <code>site.title</code>, <code>site.description</code>, <code>site.github</code>를 기준 정보로 바꿉니다. 그 다음 정적 HTML의 브랜드 문구, 메타 설명, GitHub 링크와 <code>assets/brand-mark.svg</code>를 같은 값으로 맞춥니다.</p>
+            <ul><li><code>index.html</code> — title, description, topbar, hero, footer</li><li><code>templates/document.html</code> — 새 문서의 title, navigation, footer</li><li><code>docs/*.html</code> — 이미 생성된 문서의 브랜드와 GitHub 링크</li><li><code>README.md</code> — 저장소 이름, 로컬 경로 없는 사용법, 공개 URL</li></ul>
+          </section>
           <section class="doc-section" id="preview">
             <span class="doc-kicker">01 · LOCAL PREVIEW</span><h2>파일을 직접 열지 말고<br />HTTP로 확인합니다.</h2>
             <pre><code>python -m http.server 8000</code></pre>

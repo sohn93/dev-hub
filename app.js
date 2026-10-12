@@ -56,6 +56,24 @@
     );
   }
 
+  function visibleSections(data, query = "", project = "all") {
+    const projectMap = new Map(data.projects.map((item) => [item.id, item]));
+    return data.sections
+      .map((section, sectionIndex) => ({
+        ...section,
+        sectionIndex,
+        cards: sortCards(section.cards).filter((card) =>
+          matchesCard(
+            { ...card, projectLabel: projectMap.get(card.project)?.label || "" },
+            query,
+            project,
+            section.label
+          )
+        ),
+      }))
+      .filter((section) => section.cards.length > 0);
+  }
+
   function renderHub(data) {
     const projectBar = document.querySelector("#project-filters");
     const sectionNav = document.querySelector("#section-nav");
@@ -68,6 +86,8 @@
     const projectMap = new Map(data.projects.map((project) => [project.id, project]));
     const flattened = allCards(data);
     let activeProject = "all";
+    let disposeScrollSpy = () => {};
+    let pendingRenderFrame = 0;
 
     const projectCount = (projectId) =>
       flattened.filter((card) => projectId === "all" || card.project === projectId).length;
@@ -90,28 +110,35 @@
         .join("");
     };
 
-    sectionNav.innerHTML = data.sections
-      .map(
-        (section) =>
-          `<a class="section-link" href="#${escapeHtml(section.id)}">${escapeHtml(
-            section.label
-          )}</a>`
-      )
-      .join("");
+    const syncFilterState = () => {
+      projectBar.querySelectorAll("[data-project]").forEach((button) => {
+        const selected = button.dataset.project === activeProject;
+        button.classList.toggle("is-active", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+    };
 
     const renderSections = () => {
       const query = search.value;
-      let visibleCount = 0;
+      const sections = visibleSections(data, query, activeProject);
+      const visibleCount = sections.reduce((total, section) => total + section.cards.length, 0);
 
-      sectionRoot.innerHTML = data.sections
-        .map((section, sectionIndex) => {
-          const cards = sortCards(section.cards).filter((card) =>
-            matchesCard(card, query, activeProject, section.label)
-          );
-          visibleCount += cards.length;
-          if (!cards.length) return "";
+      disposeScrollSpy();
+      disposeScrollSpy = () => {};
+      if (pendingRenderFrame) cancelAnimationFrame(pendingRenderFrame);
 
-          const cardHtml = cards
+      sectionNav.innerHTML = sections
+        .map(
+          (section, index) =>
+            `<a class="section-link${index === 0 ? " is-active" : ""}" href="#${escapeHtml(
+              section.id
+            )}">${escapeHtml(section.label)}</a>`
+        )
+        .join("");
+
+      sectionRoot.innerHTML = sections
+        .map((section) => {
+          const cardHtml = section.cards
             .map((card) => {
               const project = projectMap.get(card.project);
               const external = /^https?:\/\//.test(card.url);
@@ -121,7 +148,7 @@
               return `
                 <a class="doc-card${card.pinned ? " is-pinned" : ""} reveal"
                   href="${escapeHtml(card.url)}" ${external ? 'target="_blank" rel="noreferrer"' : ""}
-                  style="--delay: ${sectionIndex * 40}ms">
+                  style="--delay: ${section.sectionIndex * 40}ms">
                   <span class="card-accent" aria-hidden="true"></span>
                   <span class="card-main">
                     <span class="card-heading">
@@ -148,7 +175,7 @@
           return `
             <section class="document-section" id="${escapeHtml(section.id)}">
               <div class="section-heading">
-                <span class="section-index">0${sectionIndex + 1}</span>
+                <span class="section-index">0${section.sectionIndex + 1}</span>
                 <div>
                   <p class="eyebrow">${escapeHtml(section.kicker)}</p>
                   <h2>${escapeHtml(section.label)}</h2>
@@ -162,21 +189,31 @@
 
       empty.hidden = visibleCount !== 0;
       if (countLabel) countLabel.textContent = `${visibleCount}개 문서`;
-      requestAnimationFrame(() => observeReveals());
+      pendingRenderFrame = requestAnimationFrame(() => {
+        observeReveals();
+        disposeScrollSpy = setupScrollSpy();
+        pendingRenderFrame = 0;
+      });
     };
 
     projectBar.addEventListener("click", (event) => {
       const button = event.target.closest("[data-project]");
       if (!button) return;
       activeProject = button.dataset.project;
-      renderFilters();
+      syncFilterState();
       renderSections();
+    });
+    sectionNav.addEventListener("click", (event) => {
+      const link = event.target.closest(".section-link");
+      if (!link) return;
+      sectionNav.querySelectorAll(".section-link").forEach((item) => {
+        item.classList.toggle("is-active", item === link);
+      });
     });
     search.addEventListener("input", renderSections);
 
     renderFilters();
     renderSections();
-    setupScrollSpy();
   }
 
   function observeReveals() {
@@ -204,7 +241,7 @@
     const sections = links
       .map((link) => document.querySelector(link.getAttribute("href")))
       .filter(Boolean);
-    if (!links.length || !sections.length || !("IntersectionObserver" in window)) return;
+    if (!links.length || !sections.length || !("IntersectionObserver" in window)) return () => {};
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -219,6 +256,7 @@
       { rootMargin: "-20% 0px -65% 0px", threshold: [0.01, 0.25, 0.6] }
     );
     sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }
 
   function initialize() {
@@ -229,7 +267,6 @@
       const updated = document.querySelector("#site-updated");
       if (updated) updated.textContent = `Updated ${data.site.updated}`;
     }
-    setupScrollSpy();
   }
 
   if (typeof document !== "undefined") {
@@ -240,6 +277,6 @@
     }
   }
 
-  return { normalize, cardSearchText, matchesCard, sortCards, escapeHtml };
+  return { normalize, cardSearchText, matchesCard, sortCards, escapeHtml, visibleSections };
 });
 

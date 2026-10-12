@@ -23,8 +23,9 @@ if (Test-Path -LiteralPath $destination) {
     throw "Document already exists: $destination"
 }
 
-$content = Get-Content -LiteralPath $templatePath -Raw
-$content = $content.Replace('{{TITLE}}', $Title)
+$content = Get-Content -LiteralPath $templatePath -Raw -Encoding UTF8
+$encodedTitle = [System.Net.WebUtility]::HtmlEncode($Title)
+$content = $content.Replace('{{TITLE}}', $encodedTitle)
 $content = $content.Replace('{{SLUG}}', $Slug)
 $content = $content.Replace('{{DATE}}', (Get-Date -Format 'yyyy-MM-dd'))
 

@@ -597,6 +597,16 @@ img {
   font-size: 14px;
 }
 
+.search-wrap:focus-within {
+  box-shadow: 0 2px 0 var(--violet-deep);
+}
+
+.project-filter:focus-visible,
+.section-link:focus-visible {
+  outline: 3px solid var(--violet-deep);
+  outline-offset: 3px;
+}
+
 .search-wrap input::placeholder {
   color: #999589;
 }

@@ -39,8 +39,8 @@
     <text x="374" y="304" fill="#dedaff" font-family="Arial, sans-serif" font-size="13">uGUI · bootstrap · lifecycle · contracts</text>
   </g>
 
-  <path d="M350 336v49H206v35" fill="none" stroke="#8b7cff" stroke-width="3" marker-end="url(#arrow)"/>
-  <path d="M530 336v49h144v35" fill="none" stroke="#8b7cff" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M206 420v-35h144v-49" fill="none" stroke="#8b7cff" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M674 420v-35H530v-49" fill="none" stroke="#8b7cff" stroke-width="3" marker-end="url(#arrow)"/>
 
   <g filter="url(#shadow)">
     <rect x="86" y="420" width="240" height="64" rx="15" fill="url(#panel)" stroke="#454a5b"/>
