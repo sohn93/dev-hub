@@ -1,6 +1,6 @@
-# Heosi Dev Archive
+# Heosi 개발 허브
 
-개인 프로젝트를 **문제 → 판단 → 구조 → 검증**의 흐름으로 기록하는 정적 문서 허브입니다.
+개인 게임 프로젝트의 기획과 기술 문서를 프로젝트·카테고리별로 모아 보는 정적 문서 허브입니다.
 
 첫 번째 사례는 Unity 6000.3.8f1 기반의 Android 모바일 게임 공통 기반입니다. uGUI 런타임과 Firebase, Google Mobile Ads 연동을 세 개의 embedded UPM 패키지로 분리한 과정과 검증 결과를 공개합니다.
 
@@ -31,10 +31,11 @@ powershell -ExecutionPolicy Bypass -File .\scripts\validate-site.ps1
 
 | 경로 | 역할 |
 | --- | --- |
-| `index.html` | 포트폴리오 소개와 문서 허브 |
+| `index.html` | 프로젝트와 문서를 탐색하는 허브 홈 |
 | `data.js` | 사이트 정보, 프로젝트, 섹션, 문서 카드 |
 | `app.js` | 검색, 필터, 정렬, 내비게이션 |
-| `style.css` | 공통 디자인 시스템 |
+| `hub.css` | 허브 홈 전용 디자인 |
+| `style.css` | 상세 문서 디자인 시스템 |
 | `docs/` | 공개 기술 문서 |
 | `templates/` | 문서와 카드 작성 템플릿 |
 | `scripts/` | 생성 및 검증 도구 |

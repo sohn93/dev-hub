@@ -51,6 +51,7 @@ $requiredFiles = @(
     '.nojekyll',
     'README.md',
     'index.html',
+    'hub.css',
     'style.css',
     'app.js',
     'data.js',
@@ -94,7 +95,11 @@ Get-ChildItem -LiteralPath $root -Recurse -Force -File -ErrorAction SilentlyCont
     ForEach-Object { Add-Failure "Forbidden build/signing artifact: $($_.FullName)" }
 
 $htmlFiles = Get-ChildItem -LiteralPath $root -Recurse -File -Filter '*.html' -ErrorAction SilentlyContinue |
-    Where-Object { $_.FullName -notlike "*\.git\*" -and $_.FullName -notlike "*\.superpowers\*" }
+    Where-Object {
+        $_.FullName -notlike "*\.git\*" -and
+        $_.FullName -notlike "*\.superpowers\*" -and
+        $_.FullName -notlike "*\_ignore\*"
+    }
 
 foreach ($html in $htmlFiles) {
     $content = Get-Content -LiteralPath $html.FullName -Raw -Encoding UTF8
@@ -150,6 +155,71 @@ foreach ($html in $htmlFiles) {
     }
 }
 
+$indexPath = Join-Path $root 'index.html'
+if (Test-Path -LiteralPath $indexPath) {
+    $indexContent = Get-Content -LiteralPath $indexPath -Raw -Encoding UTF8
+    $requiredHubPatterns = [ordered]@{
+        'compact site header' = 'class="site-header"'
+        'site title' = 'id="site-title"'
+        'site subtitle' = 'id="site-sub"'
+        'site updated label' = 'id="site-updated"'
+        'project filters' = 'id="project-filters"'
+        'document search' = 'id="document-search"'
+        'category navigation' = 'id="section-nav"'
+        'document section root' = 'id="document-sections"'
+        'empty state' = 'id="empty-state"'
+        'minimal footer' = 'class="site-footer"'
+        'hub stylesheet' = 'href="hub\.css"'
+    }
+    foreach ($entry in $requiredHubPatterns.GetEnumerator()) {
+        if ($indexContent -notmatch $entry.Value) {
+            Add-Failure "index.html missing reference-parity $($entry.Key)"
+        }
+    }
+
+    foreach ($removedClass in @('topbar', 'hero', 'proof-strip', 'showcase', 'decision-section', 'architecture-card')) {
+        if ($indexContent -match ('class="[^"]*\b' + [regex]::Escape($removedClass) + '\b')) {
+            Add-Failure "index.html still contains removed marketing class: $removedClass"
+        }
+    }
+    if ($indexContent -match 'href="style\.css"') {
+        Add-Failure 'index.html must use the isolated hub.css instead of the detailed-document style.css'
+    }
+}
+
+$rendererPath = Join-Path $root 'app.js'
+if (Test-Path -LiteralPath $rendererPath) {
+    $rendererContent = Get-Content -LiteralPath $rendererPath -Raw -Encoding UTF8
+    $requiredRendererPatterns = [ordered]@{
+        'hub section' = 'class="hub-section"'
+        'section title' = 'class="section-title"'
+        'section description' = 'class="section-desc"'
+        'compact document card' = 'class="doc-card\$\{'
+        'project badge' = 'class="project-badge"'
+        'card title' = 'class="card-title"'
+        'card status' = 'class="status"'
+        'card description' = 'class="card-description"'
+        'card metadata row' = 'class="card-foot"'
+        'card tag' = 'class="tag"'
+    }
+    foreach ($entry in $requiredRendererPatterns.GetEnumerator()) {
+        if ($rendererContent -notmatch $entry.Value) {
+            Add-Failure "app.js missing reference-parity $($entry.Key) renderer"
+        }
+    }
+}
+
+$hubStylePath = Join-Path $root 'hub.css'
+if (Test-Path -LiteralPath $hubStylePath) {
+    $hubStyleContent = Get-Content -LiteralPath $hubStylePath -Raw -Encoding UTF8
+    if ($hubStyleContent -notmatch '\.doc-card\.is-pinned\s*\{') {
+        Add-Failure 'hub.css missing the approved pinned-card treatment'
+    }
+    if ($hubStyleContent -notmatch '-webkit-line-clamp:\s*2') {
+        Add-Failure 'hub.css must clamp compact-card descriptions to two lines'
+    }
+}
+
 $dataPath = Join-Path $root 'data.js'
 if (Test-Path -LiteralPath $dataPath) {
     $dataContent = Get-Content -LiteralPath $dataPath -Raw -Encoding UTF8
@@ -202,7 +272,11 @@ if (Test-Path -LiteralPath $dataPath) {
 }
 
 $textFiles = Get-ChildItem -LiteralPath $root -Recurse -Force -File -Include '*.html', '*.js', '*.css', '*.md', '*.svg', '*.ps1' -ErrorAction SilentlyContinue |
-    Where-Object { $_.FullName -notlike "*\.git\*" -and $_.FullName -notlike "*\.superpowers\*" }
+    Where-Object {
+        $_.FullName -notlike "*\.git\*" -and
+        $_.FullName -notlike "*\.superpowers\*" -and
+        $_.FullName -notlike "*\_ignore\*"
+    }
 $privatePathPattern = [Text.Encoding]::UTF8.GetString(
     [Convert]::FromBase64String('KD9pKSg/OltBLVpdOlxcVXNlcnNcXHxbQS1aXTovVXNlcnMvfC8oPzpVc2Vyc3xob21lKS9bXi9cc10rL3xcXFxcW15cXFxzXStcXCk=')
 )

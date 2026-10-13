@@ -1,8 +1,8 @@
 window.DEV_HUB_DATA = {
   site: {
-    title: "Heosi Dev Archive",
-    description: "게임을 만드는 코드보다, 다음 게임도 빠르게 시작하게 만드는 기반을 기록합니다.",
-    updated: "2026-10-11",
+    title: "Heosi 개발 허브",
+    description: "프로젝트별 기획과 기술 문서를 한곳에서 관리합니다.",
+    updated: "2026-10-13",
     github: "https://github.com/sohn93",
   },
   projects: [

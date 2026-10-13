@@ -3,6 +3,7 @@ Thumbs.db
 .idea/
 .vscode/
 .superpowers/
+_ignore/
 _preview/
 *.log
 *.apk

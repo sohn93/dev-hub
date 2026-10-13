@@ -3,153 +3,61 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="게임 개발 기반을 문제, 판단, 구조, 검증의 흐름으로 기록하는 개인 기술 문서 허브" />
-    <meta name="theme-color" content="#11131a" />
-    <title>Heosi Dev Archive — Mobile Game Foundation</title>
+    <meta name="description" content="개인 게임 개발 프로젝트의 기획과 기술 문서를 모아 보는 허브" />
+    <meta name="theme-color" content="#f6f7f9" />
+    <title>Heosi 개발 허브</title>
     <link rel="icon" href="assets/brand-mark.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="hub.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
-    <header class="topbar">
-      <a class="brand" href="index.html" aria-label="Heosi Dev Archive 홈">
-        <img src="assets/brand-mark.svg" width="28" height="28" alt="" />
-        <span>Heosi Dev Archive</span>
-      </a>
-      <nav class="top-links" aria-label="주요 링크">
-        <a href="#work">Work</a>
-        <a href="#library">Docs</a>
-        <a href="https://github.com/sohn93" target="_blank" rel="noreferrer">GitHub ↗</a>
-      </nav>
+
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <div class="site-heading">
+          <h1 id="site-title">Heosi 개발 허브</h1>
+          <p id="site-sub">프로젝트별 기획과 기술 문서를 한곳에서 관리합니다.</p>
+          <time id="site-updated" datetime="2026-10-13"></time>
+        </div>
+
+        <div class="hub-controls">
+          <div class="project-filters" id="project-filters" aria-label="프로젝트 필터"></div>
+          <input
+            class="search-box"
+            id="document-search"
+            type="search"
+            placeholder="문서 검색 — 제목 · 설명 · 태그 · 섹션"
+            autocomplete="off"
+            aria-label="문서 검색"
+          />
+        </div>
+      </div>
     </header>
 
-    <main id="main">
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-grid" aria-hidden="true"></div>
-        <div class="hero-copy reveal">
-          <p class="eyebrow"><span class="signal"></span> PERSONAL ENGINEERING ARCHIVE</p>
-          <h1 id="hero-title">
-            게임 하나를 만드는 대신,<br />
-            <em>다음 게임의 시작</em>을 설계했습니다.
-          </h1>
-          <p class="hero-lede">
-            장르가 바뀌어도 남는 uGUI 흐름과 Firebase, Google Mobile Ads 연동을
-            검증 가능한 모바일 게임 기반으로 분리한 과정입니다.
-          </p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="docs/case-study.html">케이스 스터디 읽기 <span>↗</span></a>
-            <a class="button button-ghost" href="#library">기술 문서 보기</a>
-          </div>
-        </div>
-        <aside class="hero-panel reveal" style="--delay: 120ms" aria-label="프로젝트 요약">
-          <div class="panel-top">
-            <span>PROJECT / 01</span>
-            <span class="availability">VERIFIED</span>
-          </div>
-          <h2>Mobile Game<br />Foundation</h2>
-          <dl>
-            <div><dt>Engine</dt><dd>Unity 6000.3.8f1</dd></div>
-            <div><dt>Target</dt><dd>Android · Portrait</dd></div>
-            <div><dt>UI</dt><dd>uGUI · TMP</dd></div>
-            <div><dt>Release</dt><dd>0.1.0</dd></div>
-          </dl>
-          <div class="panel-line" aria-hidden="true"><i></i><i></i><i></i></div>
-        </aside>
-      </section>
+    <nav class="section-nav" aria-label="문서 카테고리">
+      <div class="wrap section-nav-inner" id="section-nav"></div>
+    </nav>
 
-      <section class="proof-strip" aria-label="검증된 프로젝트 지표">
-        <article><strong>3</strong><span>embedded UPM packages</span></article>
-        <article><strong>0</strong><span>Core vendor SDK references</span></article>
-        <article><strong>3</strong><span>validation profiles</span></article>
-        <article><strong>API 35</strong><span>verified Android target</span></article>
-      </section>
-
-      <section class="showcase content-width" id="work" aria-labelledby="architecture-title">
-        <div class="showcase-copy reveal">
-          <p class="eyebrow">BOUNDARY BEFORE FEATURE</p>
-          <h2 id="architecture-title">SDK가 바뀌어도<br />게임의 중심은 흔들리지 않게.</h2>
-          <p>
-            게임 코드는 Firebase나 광고 SDK가 아니라 Core의 계약을 바라봅니다.
-            외부 SDK는 교체 가능한 adapter로 밀어내고, 씬·프리팹·설정은 시작 프로젝트가 소유합니다.
-          </p>
-          <a class="text-link" href="docs/architecture.html">아키텍처 자세히 보기 <span>→</span></a>
-        </div>
-        <figure class="architecture-card reveal" style="--delay: 100ms">
-          <img src="assets/package-architecture.svg" alt="게임 코드가 Core 계약에 의존하고 Firebase와 Google Mobile Ads adapter가 Core를 구현하는 구조" />
-          <figcaption>Dependency direction · package boundary · project-owned wiring</figcaption>
-        </figure>
-      </section>
-
-      <section class="decision-section content-width" aria-labelledby="decision-title">
-        <div class="section-intro reveal">
-          <p class="eyebrow">ENGINEERING DECISIONS</p>
-          <h2 id="decision-title">편한 지름길보다,<br />다음 프로젝트에서도 설명되는 선택.</h2>
-        </div>
-        <div class="decision-grid">
-          <article class="decision-card reveal">
-            <span class="decision-number">01</span>
-            <h3>명시적 연결</h3>
-            <p>런타임 Find와 Resources.Load 대신 scene, prefab, serialized reference로 의존성을 드러냅니다.</p>
-          </article>
-          <article class="decision-card reveal" style="--delay: 60ms">
-            <span class="decision-number">02</span>
-            <h3>실패 가능한 SDK</h3>
-            <p>Firebase 설정이 없거나 광고 동의가 늦어져도 앱의 기본 UI 흐름은 계속 동작합니다.</p>
-          </article>
-          <article class="decision-card reveal" style="--delay: 120ms">
-            <span class="decision-number">03</span>
-            <h3>릴리스 전 차단</h3>
-            <p>샘플 광고 ID, 템플릿 package ID, 누락된 Firebase 설정을 빌드 전 검증 단계에서 구분합니다.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="library" id="library" aria-labelledby="library-title">
-        <div class="content-width">
-          <div class="library-header reveal">
-            <div>
-              <p class="eyebrow">DOCUMENT LIBRARY</p>
-              <h2 id="library-title">결론보다 근거를 남깁니다.</h2>
-              <p>설계 판단부터 설치와 검증 원장까지, 필요한 깊이로 들어가세요.</p>
-            </div>
-            <div class="library-meta">
-              <span id="result-count" aria-live="polite" aria-atomic="true">0개 문서</span>
-              <span id="site-updated"></span>
-            </div>
-          </div>
-
-          <div class="library-controls reveal">
-            <div class="search-wrap">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.5-4.5m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" /></svg>
-              <input id="document-search" type="search" placeholder="제목 · 설명 · 태그 · 섹션 검색" autocomplete="off" aria-label="문서 검색" />
-            </div>
-            <div class="project-filters" id="project-filters" aria-label="프로젝트 필터"></div>
-          </div>
-        </div>
-
-        <nav class="section-nav" aria-label="문서 섹션">
-          <div class="content-width" id="section-nav"></div>
-        </nav>
-
-        <div class="content-width" id="document-sections"></div>
-        <div class="empty-state content-width" id="empty-state" hidden>
-          <span>NO RESULT</span>
-          <h2>일치하는 문서가 없습니다.</h2>
-          <p>검색어를 줄이거나 프로젝트 필터를 바꿔보세요.</p>
-        </div>
-      </section>
+    <main class="wrap hub-main" id="main">
+      <div class="hub-summary" id="work">
+        <span id="result-count" aria-live="polite" aria-atomic="true">0개 문서</span>
+      </div>
+      <div id="library">
+        <div id="document-sections"></div>
+      </div>
+      <div class="empty-state" id="empty-state" hidden>
+        <strong>일치하는 문서가 없습니다.</strong>
+        <p>검색어를 줄이거나 프로젝트 필터를 바꿔보세요.</p>
+      </div>
     </main>
 
     <footer class="site-footer">
-      <div>
-        <img src="assets/brand-mark.svg" width="26" height="26" alt="" />
-        <strong>Heosi Dev Archive</strong>
+      <div class="wrap footer-inner">
+        <span>Heosi 개발 허브</span>
       </div>
-      <p>Built as evidence, maintained as a tool.</p>
-      <a href="docs/contributing.html">이 문서 허브의 구조 보기 →</a>
     </footer>
 
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+    <script src="data.js?v=20261013"></script>
+    <script src="app.js?v=20261013"></script>
   </body>
 </html>

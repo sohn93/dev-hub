@@ -146,41 +146,34 @@
                 .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
                 .join("");
               return `
-                <a class="doc-card${card.pinned ? " is-pinned" : ""} reveal"
+                <a class="doc-card${card.pinned ? " is-pinned" : ""}"
                   href="${escapeHtml(card.url)}" ${external ? 'target="_blank" rel="noreferrer"' : ""}
-                  style="--delay: ${section.sectionIndex * 40}ms">
-                  <span class="card-accent" aria-hidden="true"></span>
+                  style="--project-color: ${project?.color || "#6d5dfc"}">
                   <span class="card-main">
-                    <span class="card-heading">
-                      <span class="project-badge" style="--project-color: ${
-                        project?.color || "#6d5dfc"
-                      }">${escapeHtml(project?.label || card.project)}</span>
-                      <strong>${escapeHtml(card.title)}</strong>
+                    <span class="card-top">
+                      <span class="project-badge">${escapeHtml(project?.label || card.project)}</span>
+                      <strong class="card-title">${escapeHtml(card.title)}</strong>
+                      <span class="status" data-status="${escapeHtml(card.status)}">${escapeHtml(
+                        card.status
+                      )}</span>
                       ${external ? '<span class="external-mark" aria-label="새 창">↗</span>' : ""}
                     </span>
                     <span class="card-description">${escapeHtml(card.description)}</span>
-                    <span class="card-tags">${tags}</span>
-                  </span>
-                  <span class="card-meta">
-                    <span class="status" data-status="${escapeHtml(card.status)}">${escapeHtml(
-                      card.status
-                    )}</span>
-                    <span>${escapeHtml(card.version)}</span>
-                    <time datetime="${escapeHtml(card.updated)}">${escapeHtml(card.updated)}</time>
+                    <span class="card-foot">
+                      <span>${escapeHtml(card.version)}</span>
+                      <time datetime="${escapeHtml(card.updated)}">${escapeHtml(card.updated)}</time>
+                      ${tags}
+                    </span>
                   </span>
                 </a>`;
             })
             .join("");
 
           return `
-            <section class="document-section" id="${escapeHtml(section.id)}">
-              <div class="section-heading">
-                <span class="section-index">0${section.sectionIndex + 1}</span>
-                <div>
-                  <p class="eyebrow">${escapeHtml(section.kicker)}</p>
-                  <h2>${escapeHtml(section.label)}</h2>
-                  <p>${escapeHtml(section.description)}</p>
-                </div>
+            <section class="hub-section" id="${escapeHtml(section.id)}">
+              <div class="section-head">
+                <h2 class="section-title">${escapeHtml(section.label)}</h2>
+                <p class="section-desc">${escapeHtml(section.description)}</p>
               </div>
               <div class="document-list">${cardHtml}</div>
             </section>`;
@@ -190,7 +183,6 @@
       empty.hidden = visibleCount !== 0;
       if (countLabel) countLabel.textContent = `${visibleCount}개 문서`;
       pendingRenderFrame = requestAnimationFrame(() => {
-        observeReveals();
         disposeScrollSpy = setupScrollSpy();
         pendingRenderFrame = 0;
       });
@@ -263,9 +255,16 @@
     observeReveals();
     const data = window.DEV_HUB_DATA;
     if (data && document.querySelector("#document-sections")) {
+      const title = document.querySelector("#site-title");
+      const subtitle = document.querySelector("#site-sub");
+      if (title) title.textContent = data.site.title;
+      if (subtitle) subtitle.textContent = data.site.description;
       renderHub(data);
       const updated = document.querySelector("#site-updated");
-      if (updated) updated.textContent = `Updated ${data.site.updated}`;
+      if (updated) {
+        updated.dateTime = data.site.updated;
+        updated.textContent = `최종 업데이트 ${data.site.updated}`;
+      }
     }
   }
 
